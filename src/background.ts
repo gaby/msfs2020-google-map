@@ -4,8 +4,8 @@ import { app, protocol, BrowserWindow } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { fork, execFile } from 'child_process'
-import { cwd } from 'process'
 import path from 'path'
+const log = require('electron-log')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -16,29 +16,31 @@ protocol.registerSchemesAsPrivileged([
 
 async function createWindow () {
   console.log(isDevelopment)
-  if (!isDevelopment) {
+  if (isDevelopment) {
+    log.debug('Starting server in dev env')
+    fork(require.resolve('../extra/server/server.js'))
+
+    execFile('./nginx.exe', { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
+      if (err) {
+        log.error(err)
+        return
+      }
+
+      log.debug(data.toString())
+    })
+  } else {
+    log.debug('Starting server in prod env')
     fork('./server.js', [], {
       cwd: path.join(__dirname, '../extra/server')
     })
 
     execFile('./nginx.exe', { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
       if (err) {
-        console.error(err)
+        log.error(err)
         return
       }
 
-      console.log(data.toString())
-    })
-  } else {
-    fork(require.resolve('../extra/server/server.js'))
-
-    execFile('./nginx.exe', { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
-      if (err) {
-        console.error(err)
-        return
-      }
-
-      console.log(data.toString())
+      log.info(data.toString())
     })
   }
 
