@@ -1,0 +1,18 @@
+2021/11/27 17:13:02 [notice] 14268#9700: using the "select" event method
+2021/11/27 17:13:02 [notice] 14268#9700: using the "select" event method
+2021/11/27 17:13:02 [notice] 14268#9700: nginx/1.21.3
+2021/11/27 17:13:02 [notice] 14268#9700: nginx/1.21.3
+2021/11/27 17:13:02 [info] 14268#9700: OS: 260200 build:9200, "", suite:100, type:1
+2021/11/27 17:13:02 [notice] 14268#9700: start worker processes
+2021/11/27 17:13:02 [notice] 14268#9700: start worker processes
+2021/11/27 17:13:02 [notice] 14268#9700: start worker process 20912
+2021/11/27 17:13:02 [notice] 14268#9700: start worker process 20912
+2021/11/27 17:13:02 [notice] 20912#15732: nginx/1.21.3
+2021/11/27 17:13:02 [notice] 20912#15732: nginx/1.21.3
+2021/11/27 17:13:02 [info] 20912#15732: OS: 260200 build:9200, "", suite:100, type:1
+2021/11/27 17:13:02 [notice] 20912#15732: create thread 21672
+2021/11/27 17:13:02 [notice] 20912#15732: create thread 21672
+2021/11/27 17:13:02 [notice] 20912#15732: create thread 26172
+2021/11/27 17:13:02 [notice] 20912#15732: create thread 26172
+2021/11/27 17:13:02 [notice] 20912#15732: create thread 4328
+2021/11/27 17:13:02 [notice] 20912#15732: create thread 4328

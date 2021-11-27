@@ -1,9 +1,0 @@
-.idea
-.vscode
-cache
-doc
-nginx/logs/*
-nginx/temp/*
-src/__pycache__/*
-.git
-dist/
