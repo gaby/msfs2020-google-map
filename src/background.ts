@@ -3,9 +3,10 @@
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import { fork, execFile } from 'child_process'
 import path from 'path'
 import log from 'electron-log'
+
+import { startServer, stopServer } from './services/serverActions'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -13,62 +14,6 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
-
-async function startServer () {
-  if (isDevelopment) {
-    log.debug('Starting koa server in dev env')
-    fork(require.resolve('../extra/server/server.js'))
-
-    execFile('./nginx.exe', { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
-      if (err) {
-        log.error(err)
-        return
-      }
-
-      log.debug(data.toString())
-    })
-  } else {
-    log.debug('Starting server in prod env')
-    fork('./server.js', [], {
-      cwd: path.join(__dirname, '../extra/server')
-    })
-
-    execFile('./nginx.exe', { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
-      if (err) {
-        log.error(err)
-        return
-      }
-
-      log.info(data.toString())
-    })
-  }
-}
-
-async function stopServer () {
-  if (isDevelopment) {
-    log.debug('Stoping koa server in dev env')
-
-    execFile('./nginx.exe', ['-s', 'stop'], { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
-      if (err) {
-        log.error(err)
-        return
-      }
-
-      log.debug(data.toString())
-    })
-  } else {
-    log.debug('Stoping server in prod env')
-
-    execFile('./nginx.exe', ['-s', 'stop'], { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
-      if (err) {
-        log.error(err)
-        return
-      }
-
-      log.info(data.toString())
-    })
-  }
-}
 
 async function createWindow () {
   // Create the browser window.
@@ -98,6 +43,7 @@ async function createWindow () {
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
+  stopServer()
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
@@ -142,9 +88,9 @@ if (isDevelopment) {
 }
 
 ipcMain.on('startServer', async (event, arg) => {
-  await startServer()
+  startServer()
 })
 
 ipcMain.on('stopServer', async (event, arg) => {
-  await stopServer()
+  stopServer()
 })
