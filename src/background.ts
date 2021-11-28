@@ -7,6 +7,7 @@ import path from 'path'
 import log from 'electron-log'
 
 import { startServer, stopServer } from './services/serverActions'
+import { patchHostsFile, unpatchHostsFile } from './services/hostsActions'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -88,9 +89,11 @@ if (isDevelopment) {
 }
 
 ipcMain.on('startServer', async (event, arg) => {
+  patchHostsFile()
   startServer()
 })
 
 ipcMain.on('stopServer', async (event, arg) => {
+  unpatchHostsFile()
   stopServer()
 })
