@@ -1,11 +1,11 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { fork, execFile } from 'child_process'
 import path from 'path'
-const log = require('electron-log')
+import log from 'electron-log'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -14,10 +14,9 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
-async function createWindow () {
-  console.log(isDevelopment)
+async function startServer () {
   if (isDevelopment) {
-    log.debug('Starting server in dev env')
+    log.debug('Starting koa server in dev env')
     fork(require.resolve('../extra/server/server.js'))
 
     execFile('./nginx.exe', { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
@@ -43,18 +42,46 @@ async function createWindow () {
       log.info(data.toString())
     })
   }
+}
 
+async function stopServer () {
+  if (isDevelopment) {
+    log.debug('Stoping koa server in dev env')
+
+    execFile('./nginx.exe', ['-s', 'stop'], { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
+      if (err) {
+        log.error(err)
+        return
+      }
+
+      log.debug(data.toString())
+    })
+  } else {
+    log.debug('Stoping server in prod env')
+
+    execFile('./nginx.exe', ['-s', 'stop'], { cwd: path.join(__dirname, '../extra/nginx') }, function (err, data) {
+      if (err) {
+        log.error(err)
+        return
+      }
+
+      log.info(data.toString())
+    })
+  }
+}
+
+async function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: (process.env
         .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      preload: path.join(__dirname, 'preload.js')
     }
   })
 
@@ -113,3 +140,11 @@ if (isDevelopment) {
     })
   }
 }
+
+ipcMain.on('startServer', async (event, arg) => {
+  await startServer()
+})
+
+ipcMain.on('stopServer', async (event, arg) => {
+  await stopServer()
+})

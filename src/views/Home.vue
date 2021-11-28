@@ -1,18 +1,30 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <button @click="startServer">Start server</button>
+    <button @click="stopServer">Stop server</button>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import HelloWorld from '@/components/HelloWorld.vue' // @ is an alias to /src
+
+declare global {
+  interface Window {
+    ipcRenderer: any
+  }
+}
 
 export default defineComponent({
   name: 'Home',
   components: {
-    HelloWorld
+  },
+  methods: {
+    startServer: () => {
+      window.ipcRenderer.send('startServer')
+    },
+    stopServer: () => {
+      window.ipcRenderer.send('stopServer')
+    }
   }
 })
 </script>
