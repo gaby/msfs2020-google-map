@@ -13,6 +13,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "ant-design-vue": "^2.2.8",
     "core-js": "^3.6.5",
     "electron-log": "^4.4.1",
     "got": "^11.8.3",

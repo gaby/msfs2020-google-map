@@ -8,6 +8,7 @@ import log from 'electron-log'
 
 import { startMapServer, stopMapServer } from './services/mapServer'
 import { patchHostsFile, unpatchHostsFile } from './services/hosts'
+import { addCertificate, removeCertificate } from './services/certificate'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -89,11 +90,13 @@ if (isDevelopment) {
 }
 
 ipcMain.on('startServer', async (event, arg) => {
+  addCertificate()
   patchHostsFile()
   startMapServer()
 })
 
 ipcMain.on('stopServer', async (event, arg) => {
+  removeCertificate()
   unpatchHostsFile()
   stopMapServer()
 })

@@ -1,11 +1,12 @@
 <template>
   <div class="home">
-    <button @click="startServer">Start server</button>
-    <button @click="stopServer">Stop server</button>
+    <a-button @click="startServer">Start server</a-button>
+    <a-button @click="stopServer">Stop server</a-button>
   </div>
 </template>
 
 <script lang="ts">
+
 import { defineComponent } from 'vue'
 
 declare global {
