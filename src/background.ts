@@ -6,8 +6,8 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import path from 'path'
 import log from 'electron-log'
 
-import { startServer, stopServer } from './services/serverActions'
-import { patchHostsFile, unpatchHostsFile } from './services/hostsActions'
+import { startMapServer, stopMapServer } from './services/mapServer'
+import { patchHostsFile, unpatchHostsFile } from './services/hosts'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -44,7 +44,7 @@ async function createWindow () {
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  stopServer()
+  stopMapServer()
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
@@ -90,10 +90,10 @@ if (isDevelopment) {
 
 ipcMain.on('startServer', async (event, arg) => {
   patchHostsFile()
-  startServer()
+  startMapServer()
 })
 
 ipcMain.on('stopServer', async (event, arg) => {
   unpatchHostsFile()
-  stopServer()
+  stopMapServer()
 })
